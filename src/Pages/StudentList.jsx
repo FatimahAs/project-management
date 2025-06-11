@@ -10,16 +10,18 @@ export default function StudentList({ user }) {
       url += `?teacherId=${user.id}`;
     }
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setStudents);
   }, [user]);
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">الطلاب</h2>
+      <h2 className="text-xl font-bold mb-4">student</h2>
       <ul className="space-y-2">
-        {students.map(s => (
-          <li key={s.id} className="border p-2 rounded">{s.name}</li>
+        {students.map((s) => (
+          <li key={s.id} className="border p-2 rounded">
+            {s.name}
+          </li>
         ))}
       </ul>
     </div>
