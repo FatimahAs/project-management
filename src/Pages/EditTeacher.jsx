@@ -3,23 +3,23 @@ import { useNavigate, useParams } from "react-router";
 
 export default function EditTeacher() {
   const { id } = useParams();
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/users/${id}`)
       .then((res) => res.json())
-      .then((data) => setUsername(data.username));
+      .then((data) => setName(data.name));
   }, [id]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!username.trim()) return alert("يرجى إدخال اسم المعلم");
+    if (!name.trim()) return alert("يرجى إدخال اسم المعلم");
 
     await fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/users/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username }),
+      body: JSON.stringify({ name }),
     });
 
     navigate("/");
@@ -33,8 +33,8 @@ export default function EditTeacher() {
           type="text"
           placeholder="اسم المعلم"
           className="w-full border px-4 py-2 rounded-xl"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <button
           type="submit"

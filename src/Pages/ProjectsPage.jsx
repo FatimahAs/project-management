@@ -1,62 +1,3 @@
-// import { useEffect, useState } from "react";
-
-// export default function ProjectsPage() {
-//   const [projects, setProjects] = useState([]);
-
-//   useEffect(() => {
-//     fetch("https://68382fb12c55e01d184c5076.mockapi.io/projects")
-//       .then((res) => res.json())
-//       .then(setProjects);
-//   }, []);
-
-//   const getStatusColor = (status) => {
-//     switch (status) {
-//       case "accepted":
-//         return "bg-green-100 text-green-700";
-//       case "rejected":
-//         return "bg-red-100 text-red-700";
-//       case "pending":
-//         return "bg-yellow-100 text-yellow-700";
-//       default:
-//         return "bg-gray-100 text-gray-700";
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-5xl mx-auto p-6">
-//       <h1 className="text-3xl font-bold mb-6 text-center">قائمة الأفكار</h1>
-
-//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//         {projects.map((project) => (
-//           <div
-//             key={project.id}
-//             className="bg-white rounded-2xl shadow p-4 border border-gray-200"
-//           >
-//             <h2 className="text-xl font-semibold text-blue-700 mb-2">
-//               {project.name}
-//             </h2>
-
-//             <p className="text-gray-600 mb-4 line-clamp-3">
-//               {project.description || "لا يوجد وصف"}
-//             </p>
-
-//             <span
-//               className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-//                 project.status
-//               )}`}
-//             >
-//               {project.status === "accepted"
-//                 ? "مقبولة"
-//                 : project.status === "rejected"
-//                 ? "مرفوضة"
-//                 : "معلقة"}
-//             </span>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
 import { useEffect, useState } from "react";
 
 export default function ProjectsPage() {
@@ -65,7 +6,7 @@ export default function ProjectsPage() {
   const [comments, setComments] = useState({});
 
   useEffect(() => {
-    fetch("https://68382fb12c55e01d184c5076.mockapi.io/projects")
+    fetch("https://683ffc315b39a8039a565e4a.mockapi.io/projects")
       .then((res) => res.json())
       .then(setProjects);
 
@@ -75,7 +16,7 @@ export default function ProjectsPage() {
   }, []);
 
   const updateProjectStatus = async (id, status) => {
-    await fetch(`https://68382fb12c55e01d184c5076.mockapi.io/projects/${id}`, {
+    await fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/projects/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -90,7 +31,7 @@ export default function ProjectsPage() {
     const comment = comments[id];
     if (!comment) return;
 
-    await fetch(`https://68382fb12c55e01d184c5076.mockapi.io/projects/${id}`, {
+    await fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/projects/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ comment }),

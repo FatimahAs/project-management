@@ -2,17 +2,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function AddTeacher() {
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username.trim()) return alert("يرجى إدخال اسم المعلم");
+    if (!name.trim()) return alert("يرجى إدخال اسم المعلم");
 
     await fetch("https://683ffc315b39a8039a565e4a.mockapi.io/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, role: "teacher" }),
+      body: JSON.stringify({ name, role: "teacher" }),
     });
 
     navigate("/");
@@ -26,8 +26,8 @@ export default function AddTeacher() {
           type="text"
           placeholder="اسم المعلم"
           className="w-full border px-4 py-2 rounded-xl"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <button
           type="submit"

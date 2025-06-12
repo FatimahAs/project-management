@@ -1,6 +1,4 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
-import Home from "../Pages/Home";
-import StudentList from "../Pages/StudentList";
 import Signin from "../Pages/Signin";
 import Signup from "../Pages/Signup";
 import AdminDashboard from "../Pages/AdminDashboard";
@@ -9,6 +7,10 @@ import AddStudent from "../Pages/AddStudent";
 import EditTeacher from "../Pages/EditTeacher";
 import EditStudent from "../Pages/EditStudent";
 import ProjectsPage from "../Pages/ProjectsPage";
+import StudentPage from "../Pages/Students/StudentPage";
+import StudentDashboard from "../Pages/Students/StudentDashboard";
+import TeacherDashboard from "../Pages/Teachers/TeacherDashboard";
+import Home from "../Pages/Home";
 
 function Layout() {
   return (
@@ -28,15 +30,17 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "/", element: <Home /> },
+      { path: "admin", element: <AdminDashboard /> },
       { path: "signup", element: <Signup /> },
       { path: "signin", element: <Signin /> },
-      { path: "studentlist", element: <StudentList /> },
-      { path: "admin", element: <AdminDashboard /> },
       { path: "addteacher", element: <AddTeacher /> },
       { path: "addstudent", element: <AddStudent /> },
       { path: "/editteacher/:id", element: <EditTeacher /> },
       { path: "/editstudent/:id", element: <EditStudent /> },
       { path: "projects", element: <ProjectsPage /> },
+      { path: "studentpage", element: <StudentPage /> },
+      { path: "student", element: <StudentDashboard /> },
+      { path: "teacher", element: <TeacherDashboard /> },
     ],
   },
 ]);
