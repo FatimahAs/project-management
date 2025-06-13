@@ -11,16 +11,16 @@ import StudentPage from "../Pages/Students/StudentPage";
 import StudentDashboard from "../Pages/Students/StudentDashboard";
 import TeacherDashboard from "../Pages/Teachers/TeacherDashboard";
 import Home from "../Pages/Home";
+import AdminRoute from "./AdminRoute";
+import TeacherRoute from "./TeacherRoute";
 
 function Layout() {
   return (
-    <>
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-grow">
-          <Outlet />
-        </main>
-      </div>
-    </>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+    </div>
   );
 }
 
@@ -30,7 +30,23 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "/", element: <Home /> },
-      { path: "admin", element: <AdminDashboard /> },
+      {
+        path: "admin",
+        element: (
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "teacher",
+        element: (
+          <TeacherRoute>
+            <TeacherDashboard />
+          </TeacherRoute>
+        ),
+      },
+
       { path: "signup", element: <Signup /> },
       { path: "signin", element: <Signin /> },
       { path: "addteacher", element: <AddTeacher /> },
@@ -40,17 +56,12 @@ const router = createBrowserRouter([
       { path: "projects", element: <ProjectsPage /> },
       { path: "studentpage", element: <StudentPage /> },
       { path: "student", element: <StudentDashboard /> },
-      { path: "teacher", element: <TeacherDashboard /> },
     ],
   },
 ]);
 
 function Router() {
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default Router;

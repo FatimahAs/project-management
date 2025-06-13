@@ -3,6 +3,7 @@ import axios from "axios";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { Link, useNavigate } from "react-router";
 import Notification from "./Notification";
+import { Logs } from "lucide-react";
 
 const USERS_API = "https://683ffc315b39a8039a565e4a.mockapi.io/users";
 const PROJECTS_API = "https://683ffc315b39a8039a565e4a.mockapi.io/projects";
@@ -162,7 +163,7 @@ export default function StudentDashboard() {
             className="md:hidden"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            ☰
+            <Logs />
           </button>
           <h1 className="text-xl font-bold">مرحبًا {user?.name}</h1>
 

@@ -19,6 +19,7 @@ import {
   LogOut,
   ShieldUser,
   Bell,
+  Logs,
 } from "lucide-react";
 import Swal from "sweetalert2";
 
@@ -186,7 +187,7 @@ export default function AdminDashboard() {
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-white text-[#333] p-4 shadow-sm flex justify-between items-center relative">
+        <header className="bg-white text-[#333] p-4 shadow-sm flex justify-between items-center relative rounded-full">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-gray-700 focus:outline-none md:hidden"
@@ -201,19 +202,9 @@ export default function AdminDashboard() {
               xmlns="http://www.w3.org/2000/svg"
             >
               {sidebarOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <Logs color="#076452" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <Logs color="#076452" />
               )}
             </svg>
           </button>
@@ -461,7 +452,7 @@ export default function AdminDashboard() {
                     return (
                       <div key={teacher.id} className="mb-6">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-lg text-blue-600">
+                          <h3 className="font-bold text-lg text-[#076452]">
                             {teacher.name}
                           </h3>
                           <div className="flex gap-2 mt-2">

@@ -13,20 +13,20 @@ export default function Signup() {
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      return Swal.fire("خطأ", "جميع الحقول مطلوبة", "error");
+      return Swal.fire("Error", "جميع الحقول مطلوبة", "error");
     }
 
     if (name.length < 6) {
-      return Swal.fire("خطأ", "يجب أن يكون الاسم أكثر من 6 حروف", "error");
+      return Swal.fire("Error", "يجب أن يكون الاسم أكثر من 6 حروف", "error");
     }
 
     if (!email.includes("tuwaiq")) {
-      return Swal.fire("خطأ", "يجب أن يحتوي البريد على كلمة tuwaiq", "error");
+      return Swal.fire("Error", "يجب أن يحتوي البريد على كلمة tuwaiq", "error");
     }
 
     if (password.length < 8) {
       return Swal.fire(
-        "خطأ",
+        "Error",
         "يجب أن تكون كلمة المرور أكثر من 8 حروف",
         "error"
       );
@@ -38,8 +38,8 @@ export default function Signup() {
         email,
         password,
         role: "student",
-        teacherId: "", // سيتم تحديده لاحقًا من الأدمن
-        teamMembers: [], // يتم تحديدهم لاحقًا
+        teacherId: "",
+        teamMembers: [],
       });
 
       Swal.fire({
@@ -52,7 +52,7 @@ export default function Signup() {
 
       setTimeout(() => navigate("/signin"), 2000);
     } catch {
-      Swal.fire("خطأ", "حدث خطأ أثناء التسجيل", "error");
+      Swal.fire("Error", "حدث خطأ أثناء التسجيل", "error");
     }
   };
 

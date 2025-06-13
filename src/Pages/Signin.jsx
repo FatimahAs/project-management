@@ -12,7 +12,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      return Swal.fire("خطأ", "جميع الحقول مطلوبة", "error");
+      return Swal.fire("Error", "جميع الحقول مطلوبة", "error");
     }
 
     try {
@@ -33,12 +33,22 @@ export default function Login() {
           showConfirmButton: false,
         });
 
-        setTimeout(() => navigate("/student"), 1500);
+        setTimeout(() => {
+          const user = JSON.parse(localStorage.getItem("user"));
+
+          if (user?.email === "admin@admin.com" && user?.password === "12345") {
+            navigate("/admin");
+          } else if (user?.email === "teacher@teacher.com") {
+            navigate("/teacher");
+          } else {
+            navigate("/student");
+          }
+        }, 1500);
       } else {
-        Swal.fire("خطأ", "البريد أو كلمة المرور غير صحيحة", "error");
+        Swal.fire("Error", "البريد أو كلمة المرور غير صحيحة", "error");
       }
     } catch {
-      Swal.fire("خطأ", "حدث خطأ أثناء تسجيل الدخول", "error");
+      Swal.fire("Error", "حدث خطأ أثناء تسجيل الدخول", "error");
     }
   };
 

@@ -37,7 +37,6 @@ export default function Home() {
         <p className="mx-auto mt-9 max-w-2xl text-lg tracking-tight text-slate-700 sm:mt-6">
           <span className="inline-block">Manage your Work and Team</span>
           <span className="inline-block m-1">
-            {" "}
             Effectively and Professionally.
           </span>
         </p>
