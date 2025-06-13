@@ -1,8 +1,26 @@
 import { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Link, useNavigate } from "react-router";
-
-const COLORS = ["#4ade80", "#f87171", "#60a5fa", "#facc15", "#333"];
+import {
+  House,
+  Lightbulb,
+  UserPlus,
+  UserRoundPlus,
+  LogOut,
+  ShieldUser,
+  Bell,
+} from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function AdminDashboard() {
   const [students, setStudents] = useState([]);
@@ -32,7 +50,7 @@ export default function AdminDashboard() {
 
   const handleAddUser = (role) => {
     navigate(`/add${role}`);
-    setSidebarOpen(false); // غلق السايدبار عند التنقل في الجوال
+    setSidebarOpen(false);
   };
 
   const handleEditUser = (user) => {
@@ -44,63 +62,115 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (id) => {
-    if (window.confirm("هل أنت متأكد من حذف هذا المستخدم؟")) {
+    const result = await Swal.fire({
+      title: "Are you sure you want to delete this user?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
       await fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/users/${id}`, {
         method: "DELETE",
       });
+
       setStudents((prev) => prev.filter((u) => u.id !== id));
       setTeachers((prev) => prev.filter((u) => u.id !== id));
+
+      Swal.fire(
+        "Deleted!",
+        "The user has been deleted successfully.",
+        "success"
+      );
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/signin");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("user");
+        navigate("/signin");
+
+        Swal.fire(
+          "Logged out!",
+          "You have been successfully logged out.",
+          "success"
+        );
+      }
+    });
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
+        className={`fixed inset-y-0 left-0 z-30 rounded-tr-xl rounded-br-xl w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0 md:static md:inset-auto`}
       >
         <div className="p-6 flex flex-col h-full">
-          <h2 className="text-2xl font-bold mb-8">لوحة المشرف</h2>
+          <div className="inline-flex items-center gap-3 mb-8">
+            <ShieldUser color="#076452" />
+            <h2 className="text-2xl font-bold text-[#076452]"> Admin</h2>
+          </div>
+          <hr className="h-[2px] bg-gray-300 shadow-sm my-4 rounded-full " />
           <nav className="flex flex-col gap-4 text-gray-700 flex-grow">
-            <button
-              onClick={() => navigate("/")}
+            <Link
+              to="/admin"
               className="text-left px-3 py-2 rounded hover:bg-gray-200"
             >
-              الرئيسية
-            </button>
-            <Link to="/projects">
-              <button className="block text-blue-600 hover:underline px-4 py-2">
-                عرض الأفكار
+              <button>
+                <div className="inline-flex items-center gap-3">
+                  <House color="#030303" size={"16px"} />
+                  <h3>Home</h3>
+                </div>
               </button>
             </Link>
-            <button
-              onClick={() => handleAddUser("student")}
+            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
+            <Link
+              to="/projects"
               className="text-left px-3 py-2 rounded hover:bg-gray-200"
             >
-              إضافة طالب
-            </button>
-            <button
-              onClick={() => handleAddUser("teacher")}
-              className="text-left px-3 py-2 rounded hover:bg-gray-200"
-            >
-              إضافة معلم
-            </button>
-            <button
-              onClick={handleLogout}
-              className="text-left px-3 py-2 rounded hover:bg-red-200 text-red-600"
-            >
-              تسجيل خروج
-            </button>
+              <div className="inline-flex items-center gap-3">
+                <Lightbulb color="#030303" size={"16px"} />
+                <h3>Idea</h3>
+              </div>
+            </Link>
+            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
+            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-gray-200">
+              <UserPlus color="#030303" size={"16px"} />
+              <button onClick={() => handleAddUser("student")}>
+                Add Students
+              </button>
+            </div>
+            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
+
+            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-gray-200">
+              <UserRoundPlus color="#030303" size={"16px"} />
+              <button onClick={() => handleAddUser("teacher")}>
+                Add Teachers
+              </button>
+            </div>
+            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
+            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-red-200 text-red-600">
+              <LogOut color="#e53e3e" size={"16px"} />
+              <button onClick={handleLogout}>Sign out</button>
+            </div>
           </nav>
           <div className="mt-auto text-xs text-gray-400">
-            © 2025 نظام الإدارة
+            © 2025 Management Idea
           </div>
         </div>
       </div>
@@ -116,10 +186,10 @@ export default function AdminDashboard() {
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between bg-white shadow px-4 py-3 md:hidden">
+        <header className="bg-white text-[#333] p-4 shadow-sm flex justify-between items-center relative">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-700 focus:outline-none"
+            className="text-gray-700 focus:outline-none md:hidden"
             aria-label="Toggle menu"
           >
             {/* أيقونة الهامبرغر */}
@@ -147,8 +217,13 @@ export default function AdminDashboard() {
               )}
             </svg>
           </button>
-          <h1 className="text-xl font-bold">لوحة تحكم المشرف</h1>
-          <div></div> {/* حافظة مكان */}
+          <div className="inline-flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-[#076452]"> Admin</h2>
+          </div>
+          <div className="relative">
+            <Bell color="#076452" />
+          </div>{" "}
+          {/* حافظة مكان */}
         </header>
 
         {/* محتوى الصفحة */}
@@ -156,104 +231,148 @@ export default function AdminDashboard() {
           {/* بطاقات الأرقام */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-green-100 text-green-800 p-4 rounded-2xl shadow text-center">
-              <h3 className="text-xl font-bold">الطلاب</h3>
-              <p className="text-3xl">{students.length}</p>
+              <div className="flex flex-col justify-center items-center gap-3">
+                <img src="/student.png" className="w-10" />
+                <h3 className="text-xl font-bold">Students</h3>
+                <p className="text-3xl">{students.length}</p>
+              </div>
             </div>
             <div className="bg-blue-100 text-blue-800 p-4 rounded-2xl shadow text-center">
-              <h3 className="text-xl font-bold">المعلمين</h3>
-              <p className="text-3xl">{teachers.length}</p>
+              <div className="flex flex-col justify-center items-center gap-3">
+                <img src="/teacher.png" className="w-10" />
+                <h3 className="text-xl font-bold">Teachers</h3>
+                <p className="text-3xl">{teachers.length}</p>
+              </div>
             </div>
             <div className="bg-yellow-100 text-yellow-800 p-4 rounded-2xl shadow text-center">
-              <h3 className="text-xl font-bold">الأفكار</h3>
-              <p className="text-3xl">{projects.length}</p>
+              <div className="flex flex-col justify-center items-center gap-3">
+                <img src="/light-bulb.png" className="w-10" />
+                <h3 className="text-xl font-bold">Idea</h3>
+                <p className="text-3xl">{projects.length}</p>
+              </div>
             </div>
           </div>
 
           {/* الرسوم البيانية في صفين */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* توزيع المستخدمين */}
             <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">توزيع المستخدمين</h2>
-              <PieChart width={300} height={300}>
-                <Pie
+              <h2 className="text-xl font-semibold mb-4">
+                {" "}
+                Teachers And Students
+              </h2>
+              <div className="flex flex-col gap-4 justify-center items-center">
+                <PieChart width={300} height={300}>
+                  <Pie
+                    data={[
+                      {
+                        name: `Students (${students.length})`,
+                        value: students.length,
+                      },
+                      {
+                        name: `Teachers (${teachers.length})`,
+                        value: teachers.length,
+                      },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label
+                  >
+                    <Cell fill="#4ade80" />
+                    <Cell fill="#60a5fa" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">General Statistics</h2>
+              <div className="flex justify-center">
+                <BarChart
+                  width={500}
+                  height={300}
                   data={[
-                    {
-                      name: `طلاب (${students.length})`,
-                      value: students.length,
-                    },
-                    {
-                      name: `معلمين (${teachers.length})`,
-                      value: teachers.length,
-                    },
+                    { name: "Students", value: students.length },
+                    { name: "Teachers", value: teachers.length },
+                    { name: "Accepted Ideas", value: accepted.length },
                   ]}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label
                 >
-                  <Cell fill="#4ade80" />
-                  <Cell fill="#60a5fa" />
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" fill="#" radius={[8, 8, 0, 0]}>
+                    <Cell fill="#CAE8BD" /> {/* أخضر - الطلاب */}
+                    <Cell fill="#80CBC4" /> {/* أزرق - المعلمين */}
+                    <Cell fill="#859F3D" /> {/* أصفر - الأفكار المقبولة */}
+                  </Bar>
+                </BarChart>
+              </div>
             </div>
 
             {/* حالة الأفكار */}
             <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">حالة الأفكار</h2>
-              <PieChart width={300} height={300}>
-                <Pie
-                  data={[
-                    {
-                      name: `مقبولة (${accepted.length})`,
-                      value: accepted.length,
-                    },
-                    {
-                      name: `مرفوضة (${rejected.length})`,
-                      value: rejected.length,
-                    },
-                    {
-                      name: `معلقة (${pending.length})`,
-                      value: pending.length,
-                    },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label
-                >
-                  <Cell fill="#4ade80" />
-                  <Cell fill="#f87171" />
-                  <Cell fill="#facc15" />
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
+              <h2 className="text-xl font-semibold mb-4 "> Idea Status</h2>
+              <div className="flex flex-col gap-4 justify-center items-center ">
+                <PieChart width={400} height={300}>
+                  <Pie
+                    data={[
+                      {
+                        name: `Accepted (${accepted.length})`,
+                        value: accepted.length,
+                      },
+                      {
+                        name: `Rejected (${rejected.length})`,
+                        value: rejected.length,
+                      },
+                      {
+                        name: `Pending (${pending.length})`,
+                        value: pending.length,
+                      },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label
+                  >
+                    <Cell fill="#4ade80" />
+                    <Cell fill="#f87171" />
+                    <Cell fill="#facc15" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </div>
             </div>
           </div>
 
           {/* جدول المعلمين وطلابهم */}
           <div className="bg-white rounded-2xl shadow p-6 overflow-auto">
-            <h2 className="text-xl font-semibold mb-4">المعلمين وطلابهم</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {" "}
+              Teachers and Students
+            </h2>
 
             <div className="flex flex-wrap gap-4 mb-4">
               <input
                 type="text"
-                placeholder="ابحث عن معلم أو طالب"
+                placeholder="Searching ..."
                 className="border border-gray-300 rounded-xl px-4 py-2 w-full md:w-80"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
               <button
                 onClick={() => setShowAll(!showAll)}
-                className="bg-indigo-500 text-white px-4 py-2 rounded-xl"
+                className="bg-indigo-500 text-white border-none  px-4 py-2 rounded-xl hover:bg-indigo-300 cursor-pointer "
               >
-                {showAll ? "عرض حسب المعلمين" : "عرض جميع الطلاب"}
+                {showAll ? "Show Teacher and Student  " : "  Show All Student"}
               </button>
             </div>
 
@@ -262,9 +381,9 @@ export default function AdminDashboard() {
                 <table className="min-w-full table-auto border border-gray-200 text-sm">
                   <thead className="bg-gray-100">
                     <tr>
-                      <th className="p-2 border">اسم الطالب</th>
-                      <th className="p-2 border">المعلم</th>
-                      <th className="p-2 border">إجراءات</th>
+                      <th className="p-2 border">Student Name </th>
+                      <th className="p-2 border">Teacher</th>
+                      <th className="p-2 border">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -285,21 +404,21 @@ export default function AdminDashboard() {
                           <tr key={s.id}>
                             <td className="p-2 border">{s.name}</td>
                             <td className="p-2 border">
-                              {teacher?.name || "بدون معلم"}
+                              {teacher?.name || " No Teacher"}
                             </td>
                             <td className="p-2 border">
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleEditUser(s)}
-                                  className="bg-yellow-400 text-white px-2 py-1 rounded text-xs"
+                                  className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
                                 >
-                                  تعديل
+                                  Edit
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(s.id)}
-                                  className="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                                  className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs hover:bg-red-100 hover:text-red-600"
                                 >
-                                  حذف
+                                  Delete
                                 </button>
                               </div>
                             </td>
@@ -319,7 +438,7 @@ export default function AdminDashboard() {
                           colSpan="3"
                           className="text-center text-gray-400 p-2"
                         >
-                          لا يوجد نتائج مطابقة
+                          No Results
                         </td>
                       </tr>
                     )}
@@ -348,15 +467,15 @@ export default function AdminDashboard() {
                           <div className="flex gap-2 mt-2">
                             <button
                               onClick={() => handleEditUser(teacher)}
-                              className="bg-yellow-400 text-white px-2 py-1 rounded text-sm"
+                              className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
                             >
-                              تعديل
+                              Edit
                             </button>
                             <button
                               onClick={() => handleDeleteUser(teacher.id)}
-                              className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                              className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs cursor-pointer hover:bg-red-100 hover:text-red-600"
                             >
-                              حذف
+                              Delete
                             </button>
                           </div>
                         </div>
@@ -365,8 +484,8 @@ export default function AdminDashboard() {
                           <table className="min-w-full table-auto border border-gray-200 text-sm">
                             <thead className="bg-gray-100">
                               <tr>
-                                <th className="p-2 border">اسم الطالب</th>
-                                <th className="p-2 border">إجراءات</th>
+                                <th className="p-2 border"> Student Name</th>
+                                <th className="p-2 border">Actions</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -377,15 +496,15 @@ export default function AdminDashboard() {
                                     <div className="flex gap-2">
                                       <button
                                         onClick={() => handleEditUser(s)}
-                                        className="bg-yellow-400 text-white px-2 py-1 rounded text-xs"
+                                        className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
                                       >
-                                        تعديل
+                                        Edit
                                       </button>
                                       <button
                                         onClick={() => handleDeleteUser(s.id)}
-                                        className="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                                        className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs cursor-pointer hover:bg-red-100 hover:text-red-600"
                                       >
-                                        حذف
+                                        Delete
                                       </button>
                                     </div>
                                   </td>
@@ -397,7 +516,7 @@ export default function AdminDashboard() {
                                     colSpan="2"
                                     className="text-center text-gray-400 p-2"
                                   >
-                                    لا يوجد طلاب
+                                    No Students
                                   </td>
                                 </tr>
                               )}

@@ -35,18 +35,12 @@ export default function Home() {
         </h1>
 
         <p className="mx-auto mt-9 max-w-2xl text-lg tracking-tight text-slate-700 sm:mt-6">
-          <span className="inline-block">
-            Bring functionalities of other apps
+          <span className="inline-block">Manage your Work and Team</span>
+          <span className="inline-block m-1">
+            {" "}
+            Effectively and Professionally.
           </span>
-          <span className="inline-block">into your Notion workspaces.</span>
         </p>
-      </div>
-
-      <div className="flex justify-center">
-        <img
-          src="https://pagedone.io/asset/uploads/1691054543.png"
-          alt="Dashboard image"
-        />
       </div>
       <div className="border border-indigo-600 mt-5 p-1 w-60 mx-auto rounded-full flex items-center justify-between mb-4">
         <span className="font-inter text-xs font-medium text-gray-900 ml-3">
@@ -72,6 +66,9 @@ export default function Home() {
             />
           </svg>
         </Link>
+      </div>
+      <div className="flex justify-center">
+        <img src="dash.png" alt="Dashboard image" className="w-[60%]" />
       </div>
     </section>
   );
