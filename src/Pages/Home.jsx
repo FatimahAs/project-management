@@ -68,7 +68,11 @@ export default function Home() {
         </Link>
       </div>
       <div className="flex justify-center">
-        <img src="dash.png" alt="Dashboard image" className="w-[60%]" />
+        <img
+          src="dash.png"
+          alt="Dashboard image"
+          className="w-[100%] lg:w-[60%]"
+        />
       </div>
     </section>
   );
