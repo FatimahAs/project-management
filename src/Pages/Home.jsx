@@ -1,6 +1,27 @@
 import React from "react";
 import { Link } from "react-router";
-
+const users = [
+  {
+    role: "Admin",
+    email: "admin@admin.com",
+    password: "12345",
+  },
+  {
+    role: "Teacher 1",
+    email: "teacher@teacher.com",
+    password: "123456",
+  },
+  {
+    role: "Teacher 2",
+    email: "teacher@teacher.com",
+    password: "12345",
+  },
+  {
+    role: "Teacher 3",
+    email: "teacher@teacher.com",
+    password: "123",
+  },
+];
 export default function Home() {
   return (
     <section className="min-h-screen  flex flex-col justify-center pt-8 lg:pt-32 bg-[url('https://pagedone.io/asset/uploads/1691055810.png')] bg-center bg-cover">
@@ -73,6 +94,28 @@ export default function Home() {
           className="w-[100%] lg:w-[60%]"
         />
       </div>
+      <div className="flex flex-col justify-center items-center mt-2">
+        <div className="p-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {users.map((user) => (
+            <div className="bg-white shadow-md rounded-2xl p-6  hover:shadow-lg transition-all">
+              <h4 className=" text-[13px] font-semibold text-blue-400 mb-2">
+                {user.role}
+              </h4>
+              <p className="text-gray-700 text-[12px]">
+                <span className="font-sm">Email:</span> {user.email}
+              </p>
+              <p className="text-gray-700 text-[12px]">
+                <span className="font-sm">Password:</span> {user.password}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* <p>
+        AdminEmail: admin@admin.com password: 12345 TeacherEmail1:
+        teacher@teacher.com password: 123456 TeacherEmail2: teacher@teacher.com
+        password: 12345 TeacherEmail3: teacher@teacher.com password: 123
+      </p> */}
     </section>
   );
 }
