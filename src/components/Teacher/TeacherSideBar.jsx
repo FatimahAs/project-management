@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import { House, Lightbulb, LogOut, User } from "lucide-react";
+import { House, Lightbulb, LogOut, User, Check } from "lucide-react";
 
 export default function TeacherSideBar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
@@ -52,7 +52,16 @@ export default function TeacherSideBar({ sidebarOpen, setSidebarOpen }) {
                 </div>
               </button>
             </Link>
-
+            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
+            <Link
+              to="/accept"
+              className="text-left px-3 py-2 rounded hover:bg-gray-200"
+            >
+              <div className="inline-flex items-center gap-3">
+                <Check color="#1c7c09" size={"16px"} />
+                <h3>Accepted Idea</h3>
+              </div>
+            </Link>
             <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
             <Link
               to="/allstudent"

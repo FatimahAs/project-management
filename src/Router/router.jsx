@@ -19,6 +19,8 @@ import AllProjects from "../Pages/Students/AllProjects";
 import EditStudentProject from "../Pages/Students/EditStudentProject";
 import AllStudentProjects from "../Pages/Teachers/AllStudentProjects";
 import EditTeacherProject from "../Pages/Teachers/EditTeacherProject";
+import Accepted from "../Pages/Students/Accepted";
+import Accept from "../Pages/Teachers/Accept";
 
 function Layout() {
   return (
@@ -72,6 +74,8 @@ const router = createBrowserRouter([
       { path: "projects", element: <ProjectsPage /> },
       { path: "create", element: <CreateIdea /> },
       { path: "all", element: <AllProjects /> },
+      { path: "accepted", element: <Accepted /> },
+      { path: "accept", element: <Accept /> },
       { path: "allstudent", element: <AllStudentProjects /> },
     ],
   },
