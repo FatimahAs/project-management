@@ -66,6 +66,7 @@ export default function Login() {
               </label>
               <input
                 value={email}
+                placeholder="@tuwaiq.com"
                 type="text"
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border-b border-gray-400 focus:outline-none focus:border-blue-500 bg-transparent"
