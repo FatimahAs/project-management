@@ -32,7 +32,7 @@ export default function Notification({
       allNotifications.push({
         id: msg.id,
         type: "message",
-        text: `رسالة جديدة من فريقك: "${msg.text.slice(0, 30)}..."`,
+        text: `New Message : "${msg.text}..."`,
         time: msg.timestamp,
       })
     );
@@ -50,10 +50,8 @@ export default function Notification({
     setUnreadCount(allNotifications.length);
   }, [messages, projects, userId]);
 
-  // تمييز الإشعارات كمقروءة عند فتح القائمة
   const markAllAsRead = async () => {
     try {
-      // تحديث الرسائل غير المقروءة
       const unreadMessages = messages.filter(
         (msg) => msg.senderId !== userId && !msg.readBy?.includes(userId)
       );
@@ -66,7 +64,6 @@ export default function Notification({
         });
       });
 
-      // تحديث المشاريع التي تغيرت حالتها وغير مقروءة
       const unreadProjects = projects.filter(
         (p) => p.status !== "pending" && !p.readBy?.includes(userId)
       );
@@ -81,10 +78,8 @@ export default function Notification({
 
       await Promise.all([...updateMsgRequests, ...updateProjRequests]);
 
-      // نحدث الـ parent component لإعادة تحميل البيانات
       refreshData();
 
-      // بعد التحديث، نصفر عدد الإشعارات غير المقروءة محليًا
       setUnreadCount(0);
     } catch (error) {
       console.error("حدث خطأ أثناء تحديث حالة الإشعارات:", error);
@@ -101,7 +96,7 @@ export default function Notification({
   return (
     <div className="relative">
       <button onClick={toggleDropdown} className="relative">
-        <Bell color="#333" className="w-6 h-6 text-white" />
+        <Bell color="#076452" className="w-6 h-6 text-white" />
         {unreadCount > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
             {unreadCount}

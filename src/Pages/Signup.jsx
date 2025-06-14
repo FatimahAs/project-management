@@ -52,7 +52,7 @@ export default function Signup() {
 
       setTimeout(() => navigate("/signin"), 2000);
     } catch {
-      Swal.fire("Error", "حدث خطأ أثناء التسجيل", "error");
+      Swal.fire("Error", " Error During Register  ", "error");
     }
   };
 

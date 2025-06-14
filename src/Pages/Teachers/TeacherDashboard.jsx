@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+
+import Swal from "sweetalert2";
+import TeacherNav from "../../components/Teacher/TeacherNav";
+import TeacherSideBar from "../../components/Teacher/TeacherSideBar";
 
 const USERS_API = "https://683ffc315b39a8039a565e4a.mockapi.io/users";
 const PROJECTS_API = "https://683ffc315b39a8039a565e4a.mockapi.io/projects";
@@ -11,23 +16,22 @@ export default function TeacherDashboard() {
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [statusUpdate, setStatusUpdate] = useState("");
-  const [reason, setReason] = useState("");
+
+  const [user, setUser] = useState(null);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [allUsers] = useState([]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setTeacher(storedUser);
 
-      // جلب الطلاب التابعين للمعلم
       axios.get(`${USERS_API}?teacherId=${storedUser.id}`).then((res) => {
         setStudents(res.data);
       });
 
-      // جلب المشاريع لأفكار الطلاب تحت المعلم
       axios.get(`${PROJECTS_API}`).then((res) => {
-        // فلتر المشاريع حسب الطلاب تحت المعلم
         const allProjects = res.data;
         axios.get(`${USERS_API}?teacherId=${storedUser.id}`).then((stuRes) => {
           const studentIds = stuRes.data.map((s) => s.id);
@@ -38,7 +42,6 @@ export default function TeacherDashboard() {
         });
       });
 
-      // جلب الرسائل الخاصة بفريق المعلم (نفترض أن فريق المعلم هو teamId الموجود في المعلم)
       if (storedUser.teamId) {
         axios.get(`${MESSAGES_API}?teamId=${storedUser.teamId}`).then((res) => {
           setMessages(res.data);
@@ -47,50 +50,12 @@ export default function TeacherDashboard() {
     }
   }, []);
 
-  const handleUpdateStatus = async (projectId) => {
-    if (!statusUpdate) {
-      alert("الرجاء اختيار حالة جديدة");
-      return;
-    }
-    try {
-      const project = projects.find((p) => p.id === projectId);
-      if (!project) return;
-
-      await axios.put(`${PROJECTS_API}/${projectId}`, {
-        ...project,
-        status: statusUpdate,
-        reason: reason || "",
-        updatedAt: new Date().toISOString(),
-      });
-
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === projectId
-            ? {
-                ...p,
-                status: statusUpdate,
-                reason,
-                updatedAt: new Date().toISOString(),
-              }
-            : p
-        )
-      );
-
-      setSelectedProjectId(null);
-      setStatusUpdate("");
-      setReason("");
-    } catch (error) {
-      alert("حدث خطأ أثناء تحديث حالة المشروع");
-      console.error(error);
-    }
-  };
-
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !teacher) return;
 
     const msg = {
       teamId: teacher.teamId,
-      senderId: teacher.id,
+      senderId: user.id,
       text: newMessage,
       timestamp: new Date().toISOString(),
     };
@@ -99,153 +64,197 @@ export default function TeacherDashboard() {
       setMessages((prev) => [...prev, msg]);
       setNewMessage("");
     } catch (error) {
-      alert("حدث خطأ أثناء إرسال الرسالة");
+      Swal.fire("Error", "Error during sending message", "error");
       console.error(error);
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const pending = projects.filter((p) => p.status === "pending").length;
+  const accepted = projects.filter((p) => p.status === "accepted").length;
+  const rejected = projects.filter((p) => p.status === "rejected").length;
+
+  const chartData = [
+    { name: "Pending", value: pending },
+    { name: "Accepted", value: accepted },
+    { name: "Rejected", value: rejected },
+  ];
+  const fetchData = () => {
+    if (!user) return;
+
+    axios.get(`${PROJECTS_API}?userId=${user.id}`).then((res) => {
+      setProjects(res.data);
+    });
+
+    axios.get(`${MESSAGES_API}?teamId=${user.teamId}`).then((res) => {
+      setMessages(res.data);
+    });
+  };
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      fetchData();
+    }
+  }, []);
+
   return (
-    <div className="flex flex-col md:flex-row h-screen p-4 gap-4 bg-gray-50">
-      {/* Projects Section */}
-      <section className="flex-1 bg-white rounded shadow p-4 overflow-auto max-h-[90vh]">
-        <h2 className="text-xl font-bold mb-4">أفكار الطلاب</h2>
-        {projects.length === 0 && <p>لا توجد أفكار لعرضها.</p>}
+    <div className="flex min-h-screen bg-gray-100">
+      <TeacherSideBar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+      <div className="flex-1 flex flex-col">
+        <TeacherNav sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <table className="w-full text-right table-auto border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">اسم الطالب</th>
-              <th className="border border-gray-300 p-2">عنوان الفكرة</th>
-              <th className="border border-gray-300 p-2">الحالة</th>
-              <th className="border border-gray-300 p-2">سبب الرفض/التعليق</th>
-              <th className="border border-gray-300 p-2">تعديل الحالة</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((proj) => {
-              const student = students.find((s) => s.id === proj.userId);
-              return (
-                <tr key={proj.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2">
-                    {student?.name || "غير معروف"}
-                  </td>
-                  <td className="border border-gray-300 p-2">{proj.title}</td>
-                  <td className="border border-gray-300 p-2 capitalize">
-                    {proj.status}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {proj.reason || "-"}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {selectedProjectId === proj.id ? (
-                      <>
-                        <select
-                          className="border rounded p-1 mr-2"
-                          value={statusUpdate}
-                          onChange={(e) => setStatusUpdate(e.target.value)}
-                        >
-                          <option value="">اختر الحالة</option>
-                          <option value="accepted">مقبولة</option>
-                          <option value="rejected">مرفوضة</option>
-                          <option value="pending">معلقة</option>
-                        </select>
-                        <input
-                          type="text"
-                          placeholder="سبب التعديل (اختياري)"
-                          className="border rounded p-1 mr-2"
-                          value={reason}
-                          onChange={(e) => setReason(e.target.value)}
-                        />
-                        <button
-                          onClick={() => handleUpdateStatus(proj.id)}
-                          className="bg-green-500 text-white rounded px-3 py-1"
-                        >
-                          حفظ
-                        </button>
-                        <button
-                          onClick={() => setSelectedProjectId(null)}
-                          className="mr-2 px-3 py-1 rounded border"
-                        >
-                          إلغاء
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => setSelectedProjectId(proj.id)}
-                        className="bg-yellow-400 rounded px-3 py-1"
-                      >
-                        تعديل
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Students List */}
-      <section className="w-80 bg-white rounded shadow p-4 overflow-auto max-h-[90vh]">
-        <h2 className="text-xl font-bold mb-4">الطلاب التابعون</h2>
-        {students.length === 0 && <p>لا يوجد طلاب.</p>}
-        <ul className="space-y-2 text-right">
-          {students.map((student) => (
-            <li key={student.id} className="border-b border-gray-200 pb-2">
-              <p className="font-semibold">{student.name}</p>
-              <p className="text-sm text-gray-600">{student.email}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Chat Section */}
-      <section className="flex-1 bg-white rounded shadow p-4 flex flex-col max-h-[90vh]">
-        <h2 className="text-xl font-bold mb-4">دردشة الفريق</h2>
-        <div className="flex-1 overflow-y-auto mb-4 space-y-2 p-2 border rounded">
-          {messages.map((msg, i) => {
-            const sender =
-              students.find((s) => s.id === msg.senderId) ||
-              (teacher && teacher.id === msg.senderId ? teacher : null);
-            return (
-              <div
-                key={i}
-                className={`p-2 rounded-xl max-w-xs break-words ${
-                  msg.senderId === teacher?.id
-                    ? "bg-yellow-200 self-end ml-auto text-right"
-                    : "bg-gray-100 mr-auto text-left"
-                }`}
-              >
-                <p className="text-sm font-bold">
-                  {sender?.name || "مستخدم مجهول"}
-                </p>
-                <p className="text-sm">{msg.text}</p>
-                <p className="text-xs text-gray-500">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </p>
+        <main className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-2xl shadow p-6 col-span-1">
+              <h2 className="text-xl font-semibold mb-4">Status Idea</h2>
+              <div className="flex flex-col gap-4 justify-center items-center ">
+                <PieChart width={400} height={300}>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label
+                  >
+                    <Cell fill="#facc15" />
+                    <Cell fill="#4ade80" />
+                    <Cell fill="#f87171" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
               </div>
-            );
-          })}
-        </div>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            className="flex-1 border rounded px-3 py-2"
-            placeholder="اكتب رسالة..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSendMessage();
-            }}
-          />
-          <button
-            onClick={handleSendMessage}
-            className="bg-blue-600 text-white rounded px-4 py-2"
-          >
-            إرسال
-          </button>
-        </div>
-      </section>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6 col-span-1">
+              <div className="p-6 w-full">
+                <h2 className="text-2xl font-bold mb-4"> Students Idea</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white rounded shadow">
+                    <thead className="bg-gray-200 text-gray-700">
+                      <tr>
+                        <th className="px-4 py-2 text-right">Student Name </th>
+                        <th className="px-4 py-2 text-right"> Idea Title</th>
+                        <th className="px-4 py-2 text-right">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projects.map((project) => {
+                        const student = students.find(
+                          (s) => s.id === project.userId
+                        );
+                        return (
+                          <tr key={project.id} className="border-b">
+                            <td className="px-4 py-2 text-right">
+                              {student?.name || " Unknown"}
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              {project.title}
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              <span
+                                className={`px-3 py-1 rounded-full text-white text-sm font-medium
+                                  ${
+                                    project.status === "pending"
+                                      ? "bg-yellow-500"
+                                      : ""
+                                  }
+                                  ${
+                                    project.status === "accepted"
+                                      ? "bg-green-500"
+                                      : ""
+                                  }
+                                  ${
+                                    project.status === "rejected"
+                                      ? "bg-red-500"
+                                      : ""
+                                  }
+                                `}
+                              >
+                                {project.status === "pending"
+                                  ? "Pending"
+                                  : project.status === "accepted"
+                                  ? "Accepted"
+                                  : "Rejected"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6 col-span-1 lg:col-span-1">
+              <h2 className="text-xl font-semibold mb-4">Team Members</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {students.map((student) => (
+                  <div key={student.id} className="border rounded-xl p-4">
+                    <p className="font-medium">{student.name}</p>
+                    <p className="text-sm text-gray-500">{student.email}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Team Chat</h2>
+              <div className="max-h-60 overflow-y-auto mb-4 space-y-3 pr-2">
+                {messages.map((msg, i) => {
+                  const sender = allUsers.find((u) => u.id === msg.senderId);
+                  return (
+                    <div
+                      key={i}
+                      className={`p-3 rounded-xl max-w-xs break-words ${
+                        msg.senderId === user.id
+                          ? "bg-yellow-200 self-end ml-auto text-right"
+                          : "bg-gray-100 mr-auto text-left"
+                      }`}
+                    >
+                      <p className="text-sm font-bold">
+                        {sender?.name || "Unknown User"}
+                      </p>
+                      <p className="text-sm">{msg.text}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(msg.timestamp).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <textarea
+                  className="flex-1 border rounded-xl px-4 py-2 resize-none h-12"
+                  placeholder="Write message..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  className="bg-yellow-500 text-white rounded-xl px-6 py-2 cursor-pointer"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

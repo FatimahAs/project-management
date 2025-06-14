@@ -1,18 +1,24 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 import Signin from "../Pages/Signin";
 import Signup from "../Pages/Signup";
-import AdminDashboard from "../Pages/AdminDashboard";
-import AddTeacher from "../Pages/AddTeacher";
-import AddStudent from "../Pages/AddStudent";
-import EditTeacher from "../Pages/EditTeacher";
-import EditStudent from "../Pages/EditStudent";
-import ProjectsPage from "../Pages/ProjectsPage";
-import StudentPage from "../Pages/Students/StudentPage";
+import AdminDashboard from "../Pages/Admin/AdminDashboard";
+import AddTeacher from "../Pages/Admin/AddTeacher";
+import AddStudent from "../Pages/Admin/AddStudent";
+import EditTeacher from "../Pages/Admin/EditTeacher";
+import EditStudent from "../Pages/Admin/EditStudent";
+import ProjectsPage from "../Pages/Admin/ProjectsPage";
 import StudentDashboard from "../Pages/Students/StudentDashboard";
 import TeacherDashboard from "../Pages/Teachers/TeacherDashboard";
 import Home from "../Pages/Home";
 import AdminRoute from "./AdminRoute";
 import TeacherRoute from "./TeacherRoute";
+import StudentRoute from "./StudentRoute";
+import CreateIdea from "../Pages/Students/CreateIdea";
+import EditProject from "../Pages/Admin/EditProject";
+import AllProjects from "../Pages/Students/AllProjects";
+import EditStudentProject from "../Pages/Students/EditStudentProject";
+import AllStudentProjects from "../Pages/Teachers/AllStudentProjects";
+import EditTeacherProject from "../Pages/Teachers/EditTeacherProject";
 
 function Layout() {
   return (
@@ -46,16 +52,27 @@ const router = createBrowserRouter([
           </TeacherRoute>
         ),
       },
-
+      {
+        path: "student",
+        element: (
+          <StudentRoute>
+            <StudentDashboard />
+          </StudentRoute>
+        ),
+      },
       { path: "signup", element: <Signup /> },
       { path: "signin", element: <Signin /> },
       { path: "addteacher", element: <AddTeacher /> },
       { path: "addstudent", element: <AddStudent /> },
       { path: "/editteacher/:id", element: <EditTeacher /> },
       { path: "/editstudent/:id", element: <EditStudent /> },
+      { path: "/edit/:id", element: <EditProject /> },
+      { path: "/editidea/:id", element: <EditStudentProject /> },
+      { path: "/editstudentidea/:id", element: <EditTeacherProject /> },
       { path: "projects", element: <ProjectsPage /> },
-      { path: "studentpage", element: <StudentPage /> },
-      { path: "student", element: <StudentDashboard /> },
+      { path: "create", element: <CreateIdea /> },
+      { path: "all", element: <AllProjects /> },
+      { path: "allstudent", element: <AllStudentProjects /> },
     ],
   },
 ]);

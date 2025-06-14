@@ -10,26 +10,18 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Link, useNavigate } from "react-router";
-import {
-  House,
-  Lightbulb,
-  UserPlus,
-  UserRoundPlus,
-  LogOut,
-  ShieldUser,
-  Bell,
-  Logs,
-} from "lucide-react";
+import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import AdminSideBar from "../../components/Admin/AdminSideBar";
+import AdminNav from "../../components/Admin/AdminNav";
 
 export default function AdminDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,11 +40,6 @@ export default function AdminDashboard() {
   const accepted = projects.filter((p) => p.status === "accepted");
   const rejected = projects.filter((p) => p.status === "rejected");
   const pending = projects.filter((p) => p.status === "pending");
-
-  const handleAddUser = (role) => {
-    navigate(`/add${role}`);
-    setSidebarOpen(false);
-  };
 
   const handleEditUser = (user) => {
     if (user.role === "teacher") {
@@ -90,136 +77,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You will be logged out.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, logout!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        localStorage.removeItem("user");
-        navigate("/signin");
-
-        Swal.fire(
-          "Logged out!",
-          "You have been successfully logged out.",
-          "success"
-        );
-      }
-    });
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-30 rounded-tr-xl rounded-br-xl w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 md:static md:inset-auto`}
-      >
-        <div className="p-6 flex flex-col h-full">
-          <div className="inline-flex items-center gap-3 mb-8">
-            <ShieldUser color="#076452" />
-            <h2 className="text-2xl font-bold text-[#076452]"> Admin</h2>
-          </div>
-          <hr className="h-[2px] bg-gray-300 shadow-sm my-4 rounded-full " />
-          <nav className="flex flex-col gap-4 text-gray-700 flex-grow">
-            <Link
-              to="/admin"
-              className="text-left px-3 py-2 rounded hover:bg-gray-200"
-            >
-              <button>
-                <div className="inline-flex items-center gap-3">
-                  <House color="#030303" size={"16px"} />
-                  <h3>Home</h3>
-                </div>
-              </button>
-            </Link>
-            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
-            <Link
-              to="/projects"
-              className="text-left px-3 py-2 rounded hover:bg-gray-200"
-            >
-              <div className="inline-flex items-center gap-3">
-                <Lightbulb color="#030303" size={"16px"} />
-                <h3>Idea</h3>
-              </div>
-            </Link>
-            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
-            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-gray-200">
-              <UserPlus color="#030303" size={"16px"} />
-              <button onClick={() => handleAddUser("student")}>
-                Add Students
-              </button>
-            </div>
-            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
-
-            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-gray-200">
-              <UserRoundPlus color="#030303" size={"16px"} />
-              <button onClick={() => handleAddUser("teacher")}>
-                Add Teachers
-              </button>
-            </div>
-            <hr className="h-[1px] bg-gray-300 shadow-sm my-4" />
-            <div className="inline-flex items-center gap-3 text-left px-3 py-2 rounded hover:bg-red-200 text-red-600">
-              <LogOut color="#e53e3e" size={"16px"} />
-              <button onClick={handleLogout}>Sign out</button>
-            </div>
-          </nav>
-          <div className="mt-auto text-xs text-gray-400">
-            © 2025 Management Idea
-          </div>
-        </div>
-      </div>
-
-      {/* Overlay when sidebar open on small screens */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-20 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-
-      {/* Main content */}
+      <AdminSideBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white text-[#333] p-4 shadow-sm flex justify-between items-center relative rounded-full">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-700 focus:outline-none md:hidden"
-            aria-label="Toggle menu"
-          >
-            {/* أيقونة الهامبرغر */}
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {sidebarOpen ? (
-                <Logs color="#076452" />
-              ) : (
-                <Logs color="#076452" />
-              )}
-            </svg>
-          </button>
-          <div className="inline-flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-[#076452]"> Admin</h2>
-          </div>
-          <div className="relative">
-            <Bell color="#076452" />
-          </div>{" "}
-          {/* حافظة مكان */}
-        </header>
-
-        {/* محتوى الصفحة */}
+        <AdminNav sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="p-6 overflow-auto">
-          {/* بطاقات الأرقام */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-green-100 text-green-800 p-4 rounded-2xl shadow text-center">
               <div className="flex flex-col justify-center items-center gap-3">
@@ -244,9 +107,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* الرسوم البيانية في صفين */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {/* توزيع المستخدمين */}
             <div className="bg-white rounded-2xl shadow p-6">
               <h2 className="text-xl font-semibold mb-4">
                 {" "}
@@ -298,15 +159,14 @@ export default function AdminDashboard() {
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value" fill="#" radius={[8, 8, 0, 0]}>
-                    <Cell fill="#CAE8BD" /> {/* أخضر - الطلاب */}
-                    <Cell fill="#80CBC4" /> {/* أزرق - المعلمين */}
-                    <Cell fill="#859F3D" /> {/* أصفر - الأفكار المقبولة */}
+                    <Cell fill="#CAE8BD" />
+                    <Cell fill="#80CBC4" />
+                    <Cell fill="#859F3D" />
                   </Bar>
                 </BarChart>
               </div>
             </div>
 
-            {/* حالة الأفكار */}
             <div className="bg-white rounded-2xl shadow p-6">
               <h2 className="text-xl font-semibold mb-4 "> Idea Status</h2>
               <div className="flex flex-col gap-4 justify-center items-center ">
@@ -344,10 +204,8 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* جدول المعلمين وطلابهم */}
           <div className="bg-white rounded-2xl shadow p-6 overflow-auto">
             <h2 className="text-xl font-semibold mb-4">
-              {" "}
               Teachers and Students
             </h2>
 
@@ -401,13 +259,13 @@ export default function AdminDashboard() {
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleEditUser(s)}
-                                  className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
+                                  className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600 cursor-pointer"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(s.id)}
-                                  className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs hover:bg-red-100 hover:text-red-600"
+                                  className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs hover:bg-red-100 hover:text-red-600 cursor-pointer"
                                 >
                                   Delete
                                 </button>
@@ -458,13 +316,13 @@ export default function AdminDashboard() {
                           <div className="flex gap-2 mt-2">
                             <button
                               onClick={() => handleEditUser(teacher)}
-                              className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
+                              className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600 cursor-pointer"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDeleteUser(teacher.id)}
-                              className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs cursor-pointer hover:bg-red-100 hover:text-red-600"
+                              className="border-1 border-red-500 text-red-500 px-2 py-1 rounded text-xs cursor-pointer hover:bg-red-100 hover:text-red-600 "
                             >
                               Delete
                             </button>
@@ -487,7 +345,7 @@ export default function AdminDashboard() {
                                     <div className="flex gap-2">
                                       <button
                                         onClick={() => handleEditUser(s)}
-                                        className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600"
+                                        className="bg-yellow-400 text-white px-2 py-1 rounded text-xs hover:bg-yellow-100 hover:text-yellow-600 cursor-pointer"
                                       >
                                         Edit
                                       </button>

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import {
   House,
@@ -8,76 +7,14 @@ import {
   UserRoundPlus,
   LogOut,
   ShieldUser,
-  Bell,
-  Logs,
 } from "lucide-react";
 
-export default function EditTeacher() {
-  const { id } = useParams();
-  const [name, setName] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function AdminSideBar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch(`https://683ffc315b39a8039a565e4a.mockapi.io/users/${id}`)
-      .then((res) => res.json())
-      .then((data) => setName(data.name));
-  }, [id]);
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Add Teacher Name",
-        confirmButtonText: "Ok",
-      });
-    }
-
-    try {
-      const response = await fetch(
-        `https://683ffc315b39a8039a565e4a.mockapi.io/users/${id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
-        }
-      );
-
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Teacher updated successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-
-        setTimeout(() => {
-          navigate("/admin");
-        }, 1500);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "An error occurred during update",
-          confirmButtonText: "Ok",
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Failed to connect to the server",
-        text: error.message,
-        confirmButtonText: "Ok",
-      });
-    }
-  };
-
   const handleAddUser = (role) => {
     navigate(`/add${role}`);
     setSidebarOpen(false);
   };
-
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -100,10 +37,8 @@ export default function EditTeacher() {
       }
     });
   };
-
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
+    <>
       <div
         className={`fixed inset-y-0 left-0 z-30 rounded-tr-xl rounded-br-xl w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -163,70 +98,12 @@ export default function EditTeacher() {
           </div>
         </div>
       </div>
-
-      {/* Overlay when sidebar open on small screens */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-20 md:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white text-[#333] p-4 shadow-sm flex justify-between items-center relative rounded-full">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-700 focus:outline-none md:hidden"
-            aria-label="Toggle menu"
-          >
-            {/* أيقونة الهامبرغر */}
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {sidebarOpen ? (
-                <Logs color="#076452" />
-              ) : (
-                <Logs color="#076452" />
-              )}
-            </svg>
-          </button>
-          <div className="inline-flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-[#076452]"> Admin</h2>
-          </div>
-          <div className="relative">
-            <Bell color="#076452" />
-          </div>{" "}
-          {/* حافظة مكان */}
-        </header>
-
-        {/* محتوى الصفحة */}
-        <main className="p-6 overflow-auto">
-          <div className="p-6 max-w-md mx-auto">
-            <h1 className="text-2xl font-bold mb-4"> Teacher Edit</h1>
-            <form onSubmit={handleUpdate} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Teacher Name "
-                className="w-full border px-4 py-2 rounded-xl"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="w-full bg-yellow-500 text-white px-4 py-2 rounded-xl"
-              >
-                Save Edit
-              </button>
-            </form>
-          </div>
-        </main>
-      </div>
-    </div>
+    </>
   );
 }
